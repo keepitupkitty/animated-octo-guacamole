@@ -252,7 +252,7 @@ A) My repository was available from day one (February 14, 2026).
 B) Feature has been unimplemented since 2018-2019, while being essential functionality of printf
 C) Comments such as "// exactly same as core::ffi::VaListImpl but all variables exposed" are not derived from the spec, despite URL to specs being attached line above of the said comment.
 
-On March 16 I joined the Redox OS Matrix. I have stated that the implementation of long double is buggy and incorrect, implementation did not preserve lifetime markers, used double-dereference pointer cast while ignoring the fact that `va_list` in both C and Rust is a plain struct (AAPCS64 spec in ¶ 10.1.5 gives the definition of `va_list` and it is plain struct) and said struct may change in Rust overtime (last VaList change in Rust happened on December 8th, 2025) and thus such casting can lead to UB.
+On March 16 I joined the Redox OS Matrix. I have stated that the implementation of long double is buggy and incorrect, implementation did not preserve lifetime markers, used double-dereference pointer cast while ignoring the fact that `va_list` in both C and Rust is a plain struct (AAPCS64 spec in § 10.1.5 gives the definition of `va_list` and it is plain struct) and said struct may change in Rust overtime (last VaList change in Rust happened on December 8th, 2025) and thus such casting can lead to UB.
 ![Me pointing issues](a/-000.jpg)
 
 Developer named auronandace suggested me to sign up to their GitLab and fix the issue and I agreed to do so in my free time.
@@ -352,7 +352,7 @@ pub unsafe extern "C" fn __x86_strtold(
 ```
 
 and the C part:
-```
+```c
 #if defined(__x86_64__)
 #define FP80_BITS 16
 #elif defined(__i386__)
@@ -432,4 +432,93 @@ After getting banned I did not stop. I began documenting all of this, timestaps 
 
 You can see that a repository with **ZERO** stars had **ZERO** unique viewers and out of sudden there was an unique viewer on March 4th of 2026 and then the unique viewer traffic drops to zero again till the March 15th! Given date and time of the relibc commit, it was late evening and thus unique viewer data confirms that willnode came across my repository on the exact day of the commit (March 4) and he has stolen the code. The MR description itself is telling: "assuming no precision loss from my local testing" and "a bit reading of how variadic args works on that specific platform." Not "I implemented this from the ABI specification." A casual description of someone who read just enough to understand the structure without understanding the correctness requirements.
 
-It does not end here! The same day (March 17th) I came across [this repository](https://github.com/thepowersgang/va_list-rs/tree/master) which was made by John Hodge also known as mutabah, especially the following file:
+It does not end here! The same day (March 17th) I came across [this repository](https://github.com/thepowersgang/va_list-rs/tree/master) which was made by John Hodge also known as mutabah, especially the following file: impl-aarch64-elf.rs
+
+Let's compare both of them:
+```rust
+// va_list-rs
+#[repr(C)]
+pub struct VaListInner {
+    stack: *const u64,
+    gr_top: *const u64,
+    vr_top: *const u64,
+    gr_offs: i32,
+    vr_offs: i32,
+}
+```
+
+```rust
+// relibc
+#[repr(C)]
+struct VaListImpl {
+    stack: *mut u8,
+    gr_top: *mut u8,
+    vr_top: *mut u8,
+    gr_offs: i32,
+    vr_offs: i32,
+}
+```
+
+Must be just abi, right? Let's dive deeper!
+
+```rust
+// va_list-rs
+impl VaListInner {
+    pub unsafe fn get_gr<T>(&mut self) -> T {
+        assert!(!self.gr_top.is_null());
+        let rv = ptr::read((self.gr_top as usize - self.gr_offs.abs() as usize) as *const _);
+        self.gr_offs += 8;
+        rv
+    }
+
+    pub unsafe fn get_vr<T>(&mut self) -> T {
+        assert!(!self.vr_top.is_null());
+        let rv = ptr::read((self.vr_top as usize - self.vr_offs.abs() as usize) as *const _);
+        self.vr_offs += 16;
+        rv
+    }
+}
+```
+
+```rust
+// relibc
+    #[cfg(target_arch = "aarch64")]
+    unsafe fn extract_longdouble(ap: &mut core::ffi::VaList) -> c_longdouble {
+        // https://c9x.me/compile/bib/abi-arm64.pdf (quad precision)
+
+        // exactly same as core::ffi::VaListImpl but all variables exposed
+        #[repr(C)]
+        struct VaListImpl {
+            stack: *mut u8,
+            gr_top: *mut u8,
+            vr_top: *mut u8,
+            gr_offs: i32,
+            vr_offs: i32,
+        }
+
+        let ap_impl: &mut VaListImpl = unsafe {
+            // The double deconstruct is intended
+            let ptr_to_struct = *(ap as *mut core::ffi::VaList as *mut *mut VaListImpl);
+            &mut *ptr_to_struct
+        };
+
+        let ptr = unsafe { ap_impl.vr_top.offset(ap_impl.vr_offs as isize) as *const c_longdouble };
+
+        ap_impl.vr_offs += 16;
+
+        unsafe { ptr.read() }
+    }
+```
+
+You might argue that it just must be the ABI? And I will say yes! But a big BUT — on Linux and other UNIX-like operating systems that use ELF file format, the long double type is 128-bit quadruple precision IEEE 754 type with the size of 16 bytes per AAPCS64. Looking at §14.4 of the AAPCS64 specification, the va_arg pseudocode tells us exactly how long double gets extracted from variadic arguments.
+When VFP registers are available, long double (binary128, 16 bytes) takes the "type passed in fp/simd registers" path — it reads from vr_top + vr_offs and advances vr_offs by 16. But crucially, before doing anything, it checks:
+
+```c
+cif (offs >= 0)
+    goto on_stack;  // VFP registers exhausted
+```
+
+When VFP registers are exhausted — which happens after 8 floating point arguments — vr_offs reaches zero and the value is on the stack, not in the register save area. The code must fall through to on_stack, align to 16 bytes, and read from __stack.
+willnode's implementation never performs this check. It always reads from vr_top + vr_offs regardless of whether registers are exhausted. The result: pass more than 8 floating point arguments before your long double and you get garbage. Silently. No error, no crash — just wrong values printed.
+
+Having this information we can again prove that willnode did not read the ABI at all, nor at least he has looked at the this pseudo-code, despite telling otherwise.
