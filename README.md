@@ -425,12 +425,12 @@ I find it ironic from a person who said that about code theft in MARMOS a year a
 Do you think it has ended? Hell nawh!
 
 ## Further investigation
-After getting banned I did not stop. I began documenting all of this, timestaps and other things. I remembered that GitHub provides traffic statistics and surprise surprise it revealed some good information! Remember the commit and merge request date and time? It is 4 Mar 2026 22:03:31 +0700 (Indonesian time zone) and this is the another key of code stealing exposure. Look at the stats:
+After getting banned I did not stop. I began documenting all of this, timestamps and other things. I remembered that GitHub provides traffic statistics and surprise surprise it revealed some good information! Remember the commit and merge request date and time? It is 4 Mar 2026 22:03:31 +0700 (Indonesian time zone) and this is another key of code stealing exposure. Look at the stats:
 
 ![stat](h/-001.jpg)
 ![stat](h/-000.jpg)
 
-You can see that a repository with **ZERO** stars had **ZERO** unique viewers and out of sudden there was an unique viewer on March 4th of 2026 and then the unique viewer traffic drops to zero again till the March 15th! Given date and time of the relibc commit, it was late evening and thus unique viewer data confirms that willnode came across my repository on the exact day of the commit (March 4) and he has stolen the code. The MR description itself is telling: "assuming no precision loss from my local testing" and "a bit reading of how variadic args works on that specific platform." Not "I implemented this from the ABI specification." A casual description of someone who read just enough to understand the structure without understanding the correctness requirements.
+You can see that a repository with **ZERO** stars had **ZERO** unique viewers and out of nowhere there was an unique viewer on March 4th of 2026 and then the unique viewer traffic drops to zero again till the March 15th! Given date and time of the relibc commit, it was late evening and thus unique viewer data confirms that willnode came across my repository on the exact day of the commit (March 4) and he has stolen the code. The MR description itself is telling: "assuming no precision loss from my local testing" and "a bit reading of how variadic args works on that specific platform." Not "I implemented this from the ABI specification." A casual description of someone who read just enough to understand the structure without understanding the correctness requirements.
 
 It does not end here! The same day (March 17th) I came across [this repository](https://github.com/thepowersgang/va_list-rs/tree/master) which was made by John Hodge also known as mutabah, especially the following file: impl-aarch64-elf.rs
 
@@ -514,7 +514,7 @@ You might argue that it just must be the ABI? And I will say yes! But a big BUT 
 When VFP registers are available, long double (binary128, 16 bytes) takes the "type passed in fp/simd registers" path — it reads from vr_top + vr_offs and advances vr_offs by 16. But crucially, before doing anything, it checks:
 
 ```c
-cif (offs >= 0)
+if (offs >= 0)
     goto on_stack;  // VFP registers exhausted
 ```
 
