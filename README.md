@@ -405,9 +405,16 @@ Then I get ban threats and eventually Jeremy banned me.
 ![threats](b/-004.jpg)
 ![threats](b/-000.jpg)
 
+I also made an issue regarding this incident which was removed...
+
+![deleted](deleted.png)
+
+but there are screenshots of it.
+![archived](b/-000.jpg)
+
 I find it ironic from a person who said that about code theft in MARMOS a year ago:
 
-![threats](jackpot51.jpg)
+![irony](jackpot51.jpg)
 
 Do you think it has ended? Hell nawh!
 
