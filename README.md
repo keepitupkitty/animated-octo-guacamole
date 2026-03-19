@@ -179,7 +179,7 @@ int main() {
 
 After this got implemented, I put this hack on the shelf to use it later for my `*printf` and `*scanf` implementations.
 
-## Accidental discovery
+## I recognize my own work
 On March 14-15 I have been reading through the relibc source code, a C library which was made by developers of Redox OS. I have been reading the printf source code and this caught my eye:
 ```rust
  #[cfg(target_arch = "x86")]
@@ -252,11 +252,11 @@ A) My repository was available since the day one (February 14, 2026).
 B) Feature has been unimplemented since 2018-2019, while being essential functionality of printf
 C) Comments such as "// exactly same as core::ffi::VaListImpl but all variables exposed" are not derived from the spec, despite URL to specs being attached line above of the said comment.
 
-On March 16 I joined the Redox OS Matrix. I have stated that the implementation of long double is buggy and incorrect, implementation did not preserve lifetime markers, used dobule pointer casting while ignoring the fact that `va_list` in both C and Rust is a plain struct (AAPCS64 spec in ¶ 10.1.5 gives the definition of `va_list` and it is plain struct) and said struct may change in Rust overtime (last VaList change in Rust happened on December 8th, 2025) and thus such casting can lead to UB.
+On March 16 I joined the Redox OS Matrix. I have stated that the implementation of long double is buggy and incorrect, implementation did not preserve lifetime markers, used double pointer casting while ignoring the fact that `va_list` in both C and Rust is a plain struct (AAPCS64 spec in ¶ 10.1.5 gives the definition of `va_list` and it is plain struct) and said struct may change in Rust overtime (last VaList change in Rust happened on December 8th, 2025) and thus such casting can lead to UB.
 ![Me pointing issues](a/-000.jpg)
 
 Developer named auronandace suggested me to sign up to their GitLab and fix the issue and I agreed to do so in my free time.
-The developer "willnode" (who stole the code) addresses those issues, claiming that he did not know about the alignment (despite specification clearly tells about it), also he claims that the behavior is guaranteed and he says he explained that he explained it in the same commit, let's look at it:
+The developer "willnode" (who stole the code) addresses those issues, claiming that he did not know about the alignment (despite specification clearly tells about it), also he claims that the behavior is guaranteed and he says he explained it in the same commit, let's look at it:
 ```rust
 // A C long double is 96 bit in x86, 128 bit in other 64-bit targets
 // However, both in x86 and x86_64 is actually f80 padded which rust has no underlying support,
@@ -269,7 +269,7 @@ pub type c_longdouble = u128;
 #[cfg(target_pointer_width = "32")]
 pub type c_longdouble = [u32; 3];
 ```
-`long double` is not u128 on x86 and such casting is still incorrect, x87 float pointing numbers are 10 bytes long with 2 or 6 bytes (depending on the bitness) are zero pads for the alignment purposes, if this person tried to extract mantissa bits then he still did that incorrectly and zero pads might (that shall be ommited in a good scenario) might corrupt the return value. After that he states that the code similarity might be coincidental because he did not see related pull requests that solve the same problem, despite I did not mention that I was working on relibc and making pull requests for it?
+`long double` is not u128 on x86 and such casting is still incorrect, x87 float pointing numbers are 10 bytes long with 2 or 6 bytes (depending on the bitness) are zero pads for the alignment purposes, if this person tried to extract mantissa bits then he still did that incorrectly and zero pads that shall be omitted may corrupt the return value. After that he states that the code similarity might be coincidental because he did not see related pull requests that solve the same problem, despite the fact that I never mentioned that I was working on relibc and making pull requests for it?
 
 ![willnode explains](a/-002.jpg)
 
@@ -279,3 +279,5 @@ I refuted his arguments, stating I had the same implementation in my own public 
 ![willnode explains](a/-004.jpg)
 
 And oh boy, it began.
+
+## The abyss
