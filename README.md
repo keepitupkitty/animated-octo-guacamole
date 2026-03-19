@@ -284,10 +284,10 @@ And oh boy, it began.
 So the thread has been made, willnode asked me to announce that I am doing, despite not being a Redox OS maintainer in any form? What entitlement you have? Then he sent me a link stating that there have been work (on December 25, 2025, Christmas!) on bringing support for long double without using a C shim, which has failed and got reverted back. You can see the merge request [here](https://gitlab.redox-os.org/redox-os/relibc/-/merge_requests/837).
 ![willnode acknowledged about the work he tried to accomplish a few months ago](a/-005.jpg)
 
-Then, I said that my code was in fact licensed under AGPLv3 which requires attribution (in sections 4 and 5). willnode deflected that with just the fact that he would love to have full support for x87 float pointing numbers in relibc and then he said that GPL code is not allowed in relibc.
+Then, I said that my code was in fact licensed under AGPLv3 which requires attribution (in sections 4 and 5). willnode deflected that with just the fact that he would love to have full support for x87 floating point numbers in relibc and then he said that GPL code is not allowed in relibc.
 ![willnode explains](a/-005.jpg)
 
-Also, if you came out with your own solution, why would you even imply you have poor understanding of the problem?
+Also, if you came out with your own solution, why would you imply you have poor understanding of the problem?
 
 Then I, again stated **explicitly** that the code which he used in relibc was actually **licensed** under AGPLv3 with the link to the crate has been provided to him with full commit history. willnode deflected it with just "ah ok." and switched the topic.
 ![willnode deflects](a/-006.jpg)
@@ -295,13 +295,13 @@ Then I, again stated **explicitly** that the code which he used in relibc was ac
 Again, I said to him that he violated the AGPLv3 and replied with ambigious "I don't know your repo existed", yes right after licensing concerns. Then I clarified it was beyond coincidence.
 ![g-d](a/-007.jpg)
 
-Another dev has came in and said that "It's not how license violation works" and then willnode replied with "there is no other way to do it" and started talking about the issue with the Rust compiler. Yet I have asked him again:
+Another dev came in and said that "It's not how license violation works" and then willnode replied with "there is no other way to do it" and started talking about the issue with the Rust compiler. Yet I have asked him again:
 
 > You could figure it years before me, why such a delay and such a suspicious timing
 
 ![All over again](a/-009.jpg)
 
-He deflected me then with "I arrive to that problem because it's an urgent request from os-test maintainer" which does not answer my question, why sudden urgency? The os-test [commit](https://gitlab.com/sortix/os-test/-/commit/f8621e2369ed477a7e6a4e8d657ac11442e6c738) that adds tests for %Lf in printf was added merged on December 4th, 2025, way before your, willnode, commit regarding strold support, not even speaking about my solution.
+He deflected me then with "I arrive to that problem because it's an urgent request from os-test maintainer" which does not answer my question. The urgency claim doesn't hold up either — the os-test [commit](https://gitlab.com/sortix/os-test/-/commit/f8621e2369ed477a7e6a4e8d657ac11442e6c738) adding %Lf tests was merged on December 4th, 2025, three months before willnode's printf commit and one month before the buggy strtold implementation landed in relibc. If urgency was the driver, why the three month delay?
 
 Also I added clarification about the same comments under the code here:
 ![Clarification](a/-010.jpg)
@@ -384,7 +384,7 @@ long double my_strtold(
 
 If you wish, you can convert it to assembly using `cc -S`.
 
-Willnode said that strtold is easier, then why don't wee see something similar to the code above in relibc then? ;)
+Willnode said that strtold is easier, then why don't we see something similar to the code above in relibc then? ;)
 
 ![willnode cope](a/-012.jpg)
 
