@@ -248,7 +248,7 @@ On March 14-15 I have been reading through the relibc source code, a C library w
 ```
 
 Looks familiar, isn't it? So I tracked the commit (https://github.com/redox-os/relibc/commit/b93e24b1d63920dc1f515772868503dd07bf0c86) and it was made on 4 Mar 2026 22:03:31 +0700 (Indonesian time zone), the timing is suspicious since:
-A) My repository was available since the day one (February 14, 2026).
+A) My repository was available from day one (February 14, 2026).
 B) Feature has been unimplemented since 2018-2019, while being essential functionality of printf
 C) Comments such as "// exactly same as core::ffi::VaListImpl but all variables exposed" are not derived from the spec, despite URL to specs being attached line above of the said comment.
 
@@ -269,7 +269,7 @@ pub type c_longdouble = u128;
 #[cfg(target_pointer_width = "32")]
 pub type c_longdouble = [u32; 3];
 ```
-`long double` is not u128 on x86 and such casting is still incorrect, x87 float pointing numbers are 10 bytes long with 2 or 6 bytes (depending on the bitness) are zero pads for the alignment purposes, if this person tried to extract mantissa bits then he still did that incorrectly and zero pads that shall be omitted may corrupt the return value. After that he states that the code similarity might be coincidental because he did not see related pull requests that solve the same problem, despite the fact that I never mentioned that I was working on relibc and making pull requests for it?
+`long double` is not u128 on x86 and such casting is still incorrect, x87 floating point numbers are 10 bytes long with 2 or 6 bytes (depending on the bitness) are zero pads for the alignment purposes, if this person tried to extract mantissa bits then he still did that incorrectly because zero padding bytes that should be omitted may corrupt the return value. After that he states that the code similarity might be coincidental because he did not see related pull requests that solve the same problem, despite the fact that I never mentioned that I was working on relibc and making pull requests for it?
 
 ![willnode explains](a/-002.jpg)
 
