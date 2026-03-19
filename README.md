@@ -269,5 +269,13 @@ pub type c_longdouble = u128;
 #[cfg(target_pointer_width = "32")]
 pub type c_longdouble = [u32; 3];
 ```
-`long double` is not u128 on x86 and such casting is still incorrect, x87 float pointing numbers are 10 bytes long with 2 or 6 bytes (depending on the bitness) are zero pads for the alignment purposes, if this person tried to extract mantissa bits then he still did that incorrectly and zero pads might (that shall be ommited in a good scenario) might corrupt the return value.
+`long double` is not u128 on x86 and such casting is still incorrect, x87 float pointing numbers are 10 bytes long with 2 or 6 bytes (depending on the bitness) are zero pads for the alignment purposes, if this person tried to extract mantissa bits then he still did that incorrectly and zero pads might (that shall be ommited in a good scenario) might corrupt the return value. After that he states that the code similarity might be coincidental because he did not see related pull requests that solve the same problem, despite I did not mention that I was working on relibc and making pull requests for it?
+
 ![willnode explains](a/-002.jpg)
+
+I refuted his arguments, stating I had the same implementation in my own public GitHub repository. You can see it in the following screenshots:
+
+![willnode explains](a/-003.jpg)
+![willnode explains](a/-004.jpg)
+
+And oh boy, it began.
