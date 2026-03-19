@@ -253,7 +253,7 @@ B) Feature has been unimplemented since 2018-2019, while being essential functio
 C) Comments such as "// exactly same as core::ffi::VaListImpl but all variables exposed" are not derived from the spec, despite URL to specs being attached line above of the said comment.
 
 On March 16 I joined the Redox OS Matrix. I have stated that the implementation of long double is buggy and incorrect, implementation did not preserve lifetime markers, used double-dereference pointer cast while ignoring the fact that `va_list` in both C and Rust is a plain struct (AAPCS64 spec in § 10.1.5 gives the definition of `va_list` and it is plain struct) and said struct may change in Rust overtime (last VaList change in Rust happened on December 8th, 2025) and thus such casting can lead to UB.
-![Me pointing issues](a/-000.jpg)
+![Me pointing issues](https://github.com/keepitupkitty/animated-octo-guacamole/blob/main/a/-000.jpg)
 
 Developer named auronandace suggested me to sign up to their GitLab and fix the issue and I agreed to do so in my free time.
 The developer "willnode" (who stole the code) addresses those issues, claiming that he did not know about the alignment (despite specification clearly tells about it), also he claims that the behavior is guaranteed and he says he explained it in the same commit, let's look at it:
@@ -271,43 +271,43 @@ pub type c_longdouble = [u32; 3];
 ```
 `long double` is not u128 on x86 and such casting is still incorrect, x87 floating point numbers are 10 bytes long with 2 or 6 bytes (depending on the bitness) are zero pads for the alignment purposes, if this person tried to extract mantissa bits then he still did that incorrectly because zero padding bytes that should be omitted may corrupt the return value. After that he states that the code similarity might be coincidental because he did not see related pull requests that solve the same problem, despite the fact that I never mentioned that I was working on relibc and making pull requests for it?
 
-![willnode explains](a/-002.jpg)
+![willnode explains](https://github.com/keepitupkitty/animated-octo-guacamole/blob/main/a/-002.jpg)
 
 I refuted his arguments, stating I had the same implementation in my own public GitHub repository. You can see it in the following screenshots:
 
-![willnode explains](a/-003.jpg)
-![willnode explains](a/-004.jpg)
+![willnode explains](https://github.com/keepitupkitty/animated-octo-guacamole/blob/main/a/-003.jpg)
+![willnode explains](https://github.com/keepitupkitty/animated-octo-guacamole/blob/main/a/-004.jpg)
 
 And oh boy, it began.
 
 ## The abyss
 So the thread has been made, willnode asked me to announce that I am doing, despite not being a Redox OS maintainer in any form? What entitlement you have? Then he sent me a link stating that there have been work (on December 25, 2025, Christmas!) on bringing support for long double without using a C shim, which has failed and got reverted back. You can see the merge request [here](https://gitlab.redox-os.org/redox-os/relibc/-/merge_requests/837).
-![willnode acknowledged about the work he tried to accomplish a few months ago](a/-005.jpg)
+![willnode acknowledged about the work he tried to accomplish a few months ago](https://github.com/keepitupkitty/animated-octo-guacamole/blob/main/a/-005.jpg)
 
 Then, I said that my code was in fact licensed under AGPLv3 which requires attribution (in sections 4 and 5). willnode deflected that with just the fact that he would love to have full support for x87 floating point numbers in relibc and then he said that GPL code is not allowed in relibc.
-![willnode explains](a/-005.jpg)
+![willnode explains](https://github.com/keepitupkitty/animated-octo-guacamole/blob/main/a/-005.jpg)
 
 Also, if you came out with your own solution, why would you imply you have poor understanding of the problem?
 
 Then I, again stated **explicitly** that the code which he used in relibc was actually **licensed** under AGPLv3 with the link to the crate has been provided to him with full commit history. willnode deflected it with just "ah ok." and switched the topic.
-![willnode deflects](a/-006.jpg)
+![willnode deflects](https://github.com/keepitupkitty/animated-octo-guacamole/blob/main/a/-006.jpg)
 
 Again, I said to him that he violated the AGPLv3 and replied with ambigious "I don't know your repo existed", yes right after licensing concerns. Then I clarified it was beyond coincidence.
-![g-d](a/-007.jpg)
+![g-d](https://github.com/keepitupkitty/animated-octo-guacamole/blob/main/a/-007.jpg)
 
 Another dev came in and said that "It's not how license violation works" and then willnode replied with "there is no other way to do it" and started talking about the issue with the Rust compiler. Yet I have asked him again:
 
 > You could figure it years before me, why such a delay and such a suspicious timing
 
-![All over again](a/-009.jpg)
+![All over again](https://github.com/keepitupkitty/animated-octo-guacamole/blob/main/a/-009.jpg)
 
 He deflected me then with "I arrive to that problem because it's an urgent request from os-test maintainer" which does not answer my question. The urgency claim doesn't hold up either — the os-test [commit](https://gitlab.com/sortix/os-test/-/commit/f8621e2369ed477a7e6a4e8d657ac11442e6c738) adding %Lf tests was merged on December 4th, 2025, three months before willnode's printf commit and one month before the buggy strtold implementation landed in relibc. If urgency was the driver, why the three month delay?
 
 Also I added clarification about the same comments under the code here:
-![Clarification](a/-010.jpg)
+![Clarification](https://github.com/keepitupkitty/animated-octo-guacamole/blob/main/a/-010.jpg)
 
 Then I asked willnode again, since he came up with the solution "on his own", then why couldn't he do the correct implementation of strtold? He didnt answer that.
-![asking all over again](a/-011.jpg)
+![asking all over again](https://github.com/keepitupkitty/animated-octo-guacamole/blob/main/a/-011.jpg)
 
 If you are wondering about solution for strtold, then you can look at it below (licensed under AGPLv3):
 
@@ -386,49 +386,49 @@ If you wish, you can convert it to assembly using `cc -S`.
 
 Willnode said that strtold is easier, then why don't we see something similar to the code above in relibc then? ;)
 
-![willnode cope](a/-012.jpg)
+![willnode cope](https://github.com/keepitupkitty/animated-octo-guacamole/blob/main/a/-012.jpg)
 
 Then I get told that willnode is a trusted developer, which does not explain anything, so he is a trusted developer then what?
 
-![deflection again](a/-013.jpg)
+![deflection again](https://github.com/keepitupkitty/animated-octo-guacamole/blob/main/a/-013.jpg)
 
 Then the founder of Redox OS who said it is "demonstrably clear" that he did not steal the code. I also refuted that argument.
 
-![lie](b/-003.jpg)
+![lie](https://github.com/keepitupkitty/animated-octo-guacamole/blob/main/b/-003.jpg)
 
 Merging code with pipelines failing (see the "Approval is optional" tag). "demonstrably clear" you say?
 
-![another lie](i/-000.jpg)
+![another lie](https://github.com/keepitupkitty/animated-octo-guacamole/blob/main/i/-000.jpg)
 
 Then I get ban threats and eventually Jeremy banned me.
 
-![threats](b/-004.jpg)
-![threats](b/-000.jpg)
+![threats](https://github.com/keepitupkitty/animated-octo-guacamole/blob/main/b/-004.jpg)
+![threats](https://github.com/keepitupkitty/animated-octo-guacamole/blob/main/b/-000.jpg)
 
 I also made an issue regarding this incident which was removed...
 
-![deleted](deleted.png)
+![deleted](https://github.com/keepitupkitty/animated-octo-guacamole/blob/main/deleted.png)
 
 but there are screenshots of it.
 
-![archived](issue/i--000.jpg)
-![archived](issue/i--001.jpg)
-![archived](issue/i--002.jpg)
-![archived](issue/i--003.jpg)
-![archived](issue/i--004.jpg)
-![archived](issue/i--005.jpg)
+![archived](https://github.com/keepitupkitty/animated-octo-guacamole/blob/main/issue/i--000.jpg)
+![archived](https://github.com/keepitupkitty/animated-octo-guacamole/blob/main/issue/i--001.jpg)
+![archived](https://github.com/keepitupkitty/animated-octo-guacamole/blob/main/issue/i--002.jpg)
+![archived](https://github.com/keepitupkitty/animated-octo-guacamole/blob/main/issue/i--003.jpg)
+![archived](https://github.com/keepitupkitty/animated-octo-guacamole/blob/main/issue/i--004.jpg)
+![archived](https://github.com/keepitupkitty/animated-octo-guacamole/blob/main/issue/i--005.jpg)
 
 I find it ironic from a person who said that about code theft in MARMOS a year ago:
 
-![irony](jackpot51.jpg)
+![irony](https://github.com/keepitupkitty/animated-octo-guacamole/blob/main/jackpot51.jpg)
 
 Do you think it has ended? Hell nawh!
 
 ## Further investigation
 After getting banned I did not stop. I began documenting all of this, timestamps and other things. I remembered that GitHub provides traffic statistics and surprise surprise it revealed some good information! Remember the commit and merge request date and time? It is 4 Mar 2026 22:03:31 +0700 (Indonesian time zone) and this is another key of code stealing exposure. Look at the stats:
 
-![stat](h/-001.jpg)
-![stat](h/-000.jpg)
+![stat](https://github.com/keepitupkitty/animated-octo-guacamole/blob/main/h/-001.jpg)
+![stat](https://github.com/keepitupkitty/animated-octo-guacamole/blob/main/h/-000.jpg)
 
 You can see that a repository with **ZERO** stars had **ZERO** unique viewers and out of nowhere there was a unique visitor on March 4th, 2026 — and then the traffic drops to zero again until March 15th. GitHub traffic data shows exactly 1 unique visitor and 3 clones on March 4. Someone didn't just browse the README. They cloned the entire repository, and hours later a merge request appeared in relibc implementing the same approach. MR !1065 was created at 22:03:31 Indonesian time on the same day. Draw your own conclusions.
 The MR description itself is telling: "assuming no precision loss from my local testing" and "a bit reading of how variadic args works on that specific platform." Not "I implemented this from the ABI specification." A casual description of someone who read just enough to understand the structure without understanding the correctness requirements.
