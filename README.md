@@ -250,5 +250,7 @@ On March 14-15 I have been reading through the relibc source code, a C library w
 Looks familiar, isn't it? So I tracked the commit (https://github.com/redox-os/relibc/commit/b93e24b1d63920dc1f515772868503dd07bf0c86) and it was made on 4 Mar 2026 22:03:31 +0700 (Indonesian time zone), the timing is suspicious since:
 A) My repository was available since the day one (February 14, 2026).
 B) Feature has been unimplemented since 2018-2019, while being essential functionality of printf
+C) Comments such as "// exactly same as core::ffi::VaListImpl but all variables exposed" are not derived from the spec, despite URL to specs being attached line above of the said comment.
 
-On March 16 I joined the Redox OS Matrix.
+On March 16 I joined the Redox OS Matrix. I have stated that the implementation of long double is buggy and incorrect, implementation did not preserve lifetime markers, used dobule pointer casting while ignoring the fact that `va_list` in both C and Rust it is a plain struct and said struct may change in Rust overtime (last VaList change in Rust happened on December 8th, 2025) and thus such casting can lead to UB.
+![Me pointing issues](a/-000.jpg)
