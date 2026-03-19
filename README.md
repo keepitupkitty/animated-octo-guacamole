@@ -254,3 +254,20 @@ C) Comments such as "// exactly same as core::ffi::VaListImpl but all variables 
 
 On March 16 I joined the Redox OS Matrix. I have stated that the implementation of long double is buggy and incorrect, implementation did not preserve lifetime markers, used dobule pointer casting while ignoring the fact that `va_list` in both C and Rust is a plain struct (AAPCS64 spec in ¶ 10.1.5 gives the definition of `va_list` and it is plain struct) and said struct may change in Rust overtime (last VaList change in Rust happened on December 8th, 2025) and thus such casting can lead to UB.
 ![Me pointing issues](a/-000.jpg)
+
+Developer named auronandace suggested me to sign up to their GitLab and fix the issue and I agreed to do so in my free time.
+The developer "willnode" (who stole the code) addresses those issues, claiming that he did not know about the alignment (despite specification clearly tells about it), also he claims that the behavior is guaranteed and he says he explained that he explained it in the same commit, let's look at it:
+```rust
+// A C long double is 96 bit in x86, 128 bit in other 64-bit targets
+// However, both in x86 and x86_64 is actually f80 padded which rust has no underlying support,
+//     while aarch64 (and possibly riscv64) support full f128 type but behind a feature gate.
+// Until rust supporting them, relibc will lose precision to get them working, plus:
+//     All read operation to this type must be converted from "relibc_ldtod".
+//     All write operation to this type must be converted with "relibc_dtold".
+#[cfg(target_pointer_width = "64")]
+pub type c_longdouble = u128;
+#[cfg(target_pointer_width = "32")]
+pub type c_longdouble = [u32; 3];
+```
+`long double` is not u128 on x86 and such casting is still incorrect, x87 float pointing numbers are 10 bytes long with 2 or 6 bytes (depending on the bitness) are zero pads for the alignment purposes, if this person tried to extract mantissa bits then he still did that incorrectly and zero pads might (that shall be ommited in a good scenario) might corrupt the return value.
+![willnode explains](a/-002.jpg)
