@@ -247,7 +247,7 @@ On March 14-15 I have been reading through the relibc source code, a C library w
     }
 ```
 
-Looks familiar, isn't it? So I tracked the commit (https://github.com/redox-os/relibc/commit/b93e24b1d63920dc1f515772868503dd07bf0c86) and it was made on 4 Mar 2026 22:03:31 +0700 (Indonesian time zone), the timing is suspicious since:
+Looks familiar, isn't it? So I tracked the commit [b93e24b1d](https://github.com/redox-os/relibc/commit/b93e24b1d63920dc1f515772868503dd07bf0c86) and it was made on 4 Mar 2026 22:03:31 +0700 (Indonesian time zone), the timing is suspicious since:
 A) My repository was available from day one (February 14, 2026).
 B) Feature has been unimplemented since 2018-2019, while being essential functionality of printf
 C) Comments such as "// exactly same as core::ffi::VaListImpl but all variables exposed" are not derived from the spec, despite URL to specs being attached line above of the said comment.
@@ -281,3 +281,13 @@ I refuted his arguments, stating I had the same implementation in my own public 
 And oh boy, it began.
 
 ## The abyss
+So the thread has been made, willnode asked me to announce that I am doing, despite not being a Redox OS maintainer in any form? What entitlement you have? Then he sent me a link stating that there have been work (on December 25, 2025, Christmas!) on bringing support for long double without using a C shim, which has failed and got reverted back. You can see the merge request [here](https://gitlab.redox-os.org/redox-os/relibc/-/merge_requests/837).
+![willnode acknowledged about the work he tried to accomplish a few months ago](a/-005.jpg)
+
+Then, I said that my code was in fact licensed under AGPLv3 which requires attribution (in sections 4 and 5). willnode deflected that with just the fact that he would love to have full support for x87 float pointing numbers in relibc and then he said that GPL code is not allowed in relibc.
+![willnode explains](a/-005.jpg)
+
+Also, if you came out with your own solution, why would you imply you have poor understanding of the problem?
+
+Then I, again stated **explicitly** that the code which he used in relibc was actually **licensed** under AGPLv3 with the link to the crate has been provided to him with full commit history. willnode deflected it with just "ah ok." and switched the topic.
+![willnode deflects](a/-006.jpg)
