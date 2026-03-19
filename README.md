@@ -174,6 +174,10 @@ int main() {
   return 0;
 }
 ```
+
 > The repository URL: https://github.com/keepitupkitty/clever-x86-hack-for-rust
 
 After this got implemented, I put this hack on the shelf to use it later for my `*printf` and `*scanf` implementations.
+
+## Accidental discovery
+On March 14-15 I have been reading through the relibc source code, a C library which was made by developers of Redox OS.
