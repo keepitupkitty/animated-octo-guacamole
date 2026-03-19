@@ -410,7 +410,12 @@ I also made an issue regarding this incident which was removed...
 ![deleted](deleted.png)
 
 but there are screenshots of it.
-![archived](b/-000.jpg)
+![archived](issue/i--000.jpg)
+![archived](issue/i--001.jpg)
+![archived](issue/i--002.jpg)
+![archived](issue/i--003.jpg)
+![archived](issue/i--004.jpg)
+![archived](issue/i--005.jpg)
 
 I find it ironic from a person who said that about code theft in MARMOS a year ago:
 
