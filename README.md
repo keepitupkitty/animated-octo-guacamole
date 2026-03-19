@@ -180,4 +180,75 @@ int main() {
 After this got implemented, I put this hack on the shelf to use it later for my `*printf` and `*scanf` implementations.
 
 ## Accidental discovery
-On March 14-15 I have been reading through the relibc source code, a C library which was made by developers of Redox OS.
+On March 14-15 I have been reading through the relibc source code, a C library which was made by developers of Redox OS. I have been reading the printf source code and this caught my eye:
+```rust
+ #[cfg(target_arch = "x86")]
+    unsafe fn extract_longdouble(ap: &mut core::ffi::VaList) -> c_longdouble {
+        todo_skip!(0, "long double in variadic printf is not supported");
+        [0, 0, 0]
+    }
+    #[cfg(target_arch = "x86_64")]
+    unsafe fn extract_longdouble(ap: &mut core::ffi::VaList) -> c_longdouble {
+        // https://refspecs.linuxfoundation.org/elf/x86_64-abi-0.95.pdf (long double)
+
+        // exactly same as core::ffi::VaListImpl but all variables exposed
+        #[repr(C)]
+        struct VaListImpl {
+            gp_offset: i32,
+            fp_offset: i32,
+            overflow_arg_area: *mut u8,
+            reg_save_area: *mut u8,
+        }
+
+        let ap_impl = unsafe {
+            // The double deconstruct is intended
+            let ptr_to_struct = *(ap as *mut core::ffi::VaList as *mut *mut VaListImpl);
+            &mut *ptr_to_struct
+        };
+
+        let ptr = ap_impl.overflow_arg_area as *const c_longdouble;
+        let val = unsafe { ptr.read() };
+
+        ap_impl.overflow_arg_area = unsafe { ap_impl.overflow_arg_area.add(16) };
+
+        val
+    }
+    #[cfg(target_arch = "aarch64")]
+    unsafe fn extract_longdouble(ap: &mut core::ffi::VaList) -> c_longdouble {
+        // https://c9x.me/compile/bib/abi-arm64.pdf (quad precision)
+
+        // exactly same as core::ffi::VaListImpl but all variables exposed
+        #[repr(C)]
+        struct VaListImpl {
+            stack: *mut u8,
+            gr_top: *mut u8,
+            vr_top: *mut u8,
+            gr_offs: i32,
+            vr_offs: i32,
+        }
+
+        let ap_impl: &mut VaListImpl = unsafe {
+            // The double deconstruct is intended
+            let ptr_to_struct = *(ap as *mut core::ffi::VaList as *mut *mut VaListImpl);
+            &mut *ptr_to_struct
+        };
+
+        let ptr = unsafe { ap_impl.vr_top.offset(ap_impl.vr_offs as isize) as *const c_longdouble };
+
+        ap_impl.vr_offs += 16;
+
+        unsafe { ptr.read() }
+    }
+
+    #[cfg(target_arch = "riscv64")]
+    unsafe fn extract_longdouble(ap: &mut core::ffi::VaList) -> c_longdouble {
+        todo_skip!(0, "long double in variadic printf is not supported");
+        0u128
+    }
+```
+
+Looks familiar, isn't it? So I tracked the commit (https://github.com/redox-os/relibc/commit/b93e24b1d63920dc1f515772868503dd07bf0c86) and it was made on 4 Mar 2026 22:03:31 +0700 (Indonesian time zone), the timing is suspicious since:
+A) My repository was available since the day one (February 14, 2026).
+B) Feature has been unimplemented since 2018-2019, while being essential functionality of printf
+
+On March 16 I joined the Redox OS Matrix.
