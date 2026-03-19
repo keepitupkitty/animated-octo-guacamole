@@ -523,3 +523,10 @@ When VFP registers are exhausted — which happens after 8 floating point argume
 willnode's implementation never performs this check. It always reads from vr_top + vr_offs regardless of whether registers are exhausted. The result: pass more than 8 floating point arguments before your long double and you get garbage. Silently. No error, no crash — just wrong values printed.
 
 Having this information we can again prove that willnode did not read the ABI at all, nor at least he has looked at the this pseudo-code, despite telling otherwise.
+
+## TRVTH NVKE and conclusion
+Just because you dared to come across the profile of the unknown to the world coder and thought "gee i cant do things on my own lets copy it from someone's project teehee" and hoped nobody will ever verify that? YOU. WERE. WRONG. Sometimes it takes just 1 reading and 1 comparing to see where it got from. I have offered you a rewrite under MIT, yet you banned me and deleted (as you thought) all the evidence, well, WRONG AGAIN. Even after re-reading all docs, specs and all, even reading failed pipeline logs (look [here](https://gitlab.redox-os.org/redox-os/relibc/-/jobs/89537) and [there](https://gitlab.redox-os.org/redox-os/relibc/-/jobs/89538)) it genuinely made me nauseated and my eyes began to bleed. I will say the following:
+
+It is demonstrably clear, you do not respect other people, even THE ONES WHO WRITE UNDER PERMISSIVE LICENSES, you have no idea what your code does and the testing is so poor I'm not even sure if it is needed at all. You steal, discredit and ban people and also spread false information. You can look at the case happened with [GNOME in 2021](https://blogs.gnome.org/christopherdavis/2021/11/10/system76-how-not-to-collaborate/), such a poop show.
+
+Anyway, I will keep on doing my project, especially my libc, drinking vanilla sugar flavored latte and eat сырники. Have a nice day!
