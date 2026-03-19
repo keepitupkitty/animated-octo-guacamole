@@ -410,6 +410,7 @@ I also made an issue regarding this incident which was removed...
 ![deleted](deleted.png)
 
 but there are screenshots of it.
+
 ![archived](issue/i--000.jpg)
 ![archived](issue/i--001.jpg)
 ![archived](issue/i--002.jpg)
