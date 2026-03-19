@@ -310,3 +310,76 @@ Then I asked willnode again, since he came up with the solution "on his own", th
 ![asking all over again](a/-011.jpg)
 
 If you are wondering about solution for strtold, then you can look at it below (licensed under AGPLv3):
+
+The Rust part:
+```rust
+use std::ffi::c_double;
+use std::ffi::c_char;
+
+#[inline]
+fn fp80_from_f64(s: f64) -> [u8; 16] {
+  let result: [u8; 16] = [0; 16];
+  unsafe {
+    core::arch::asm!(
+        "fldl ({0})",
+        "fstpt ({1})",
+        in(reg) &raw const s,
+        in(reg) result.as_ptr(),
+        options(att_syntax)
+    );
+  }
+  result
+}
+
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn strtod(
+    _s: *const c_char,
+    _endp: *mut *mut c_char,
+) -> c_double {
+    todo!("Let's assume we got our strtod implemented")
+}
+
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn __x86_strtold(
+    s: *const c_char,
+    endp: *mut *mut c_char,
+    result: *mut [u8; 16]
+) {
+    let f = unsafe { strtod(s, endp) };
+    let f80 = fp80_from_f64(f);
+    unsafe { *result = f80 };
+}
+```
+
+and the C part:
+```
+#if defined(__x86_64__)
+#define FP80_BITS 16
+#elif defined(__i386__)
+#define FP80_BITS 12
+#endif
+
+extern void __x86_strtold(
+    const char *s,
+    char **endp,
+    unsigned char result[FP80_BITS]
+);
+
+long double my_strtold(
+  const char* restrict str,
+  char** restrict str_end)
+{
+  union {
+    long double value;
+    unsigned char bits[FP80_BITS];
+  } fp80_t;
+
+  fp80_t.value = 0.0L;
+
+  __x86_strtold(str, str_end, fp80_t.bits);
+
+  return fp80_t.value;
+}
+```
+
+If you wish, you can convert it to assembly using `cc -S`.
