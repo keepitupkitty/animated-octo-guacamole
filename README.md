@@ -383,3 +383,24 @@ long double my_strtold(
 ```
 
 If you wish, you can convert it to assembly using `cc -S`.
+
+Willnode said that strtold is easier, then why don't wee see something similar to the code above in relibc then? ;)
+
+![willnode cope](a/-012.jpg)
+
+Then I get told that willnode is a trusted developer, which does not explain anything, so he is a trusted developer then what?
+
+![deflection again](a/-013.jpg)
+
+Then the founder of Redox OS who said it is "demonstrably clear" that he did not steal the code. I also refuted that argument.
+
+![lie](b/-003.jpg)
+
+Merging code with pipelines failing (see the "Approval is optional" tag). "demonstrably clear" you say?
+
+![another lie](i/-000.jpg)
+
+Then I get ban threats and eventually Jeremy banned me.
+
+![threats](b/-004.jpg)
+![threats](b/-000.jpg)
