@@ -176,4 +176,4 @@ int main() {
 ```
 > The repository URL: https://github.com/keepitupkitty/clever-x86-hack-for-rust
 
-After this got implemented, I put this hack in the shelf to use it later for my `*printf` and `*scanf` implementations.
+After this got implemented, I put this hack on the shelf to use it later for my `*printf` and `*scanf` implementations.
